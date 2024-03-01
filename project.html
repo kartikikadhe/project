@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HDK SPECIAL</title>
+</head>
+<body>
+    <h1>Restaurant Order System</h1>
+
+    <form action="process_order.php" method="post">
+        <h2>Menu</h2>
+        <table>
+            <tr>
+                <th>Item</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Burger</td>
+                <td>Rs5.00</td>
+                <td><input type="number" name="item1_quantity" value="0" min="0"></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Pizza</td>
+                <td>Rs10.00</td>
+                <td><input type="number" name="item2_quantity" value="0" min="0"></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Pasta</td>
+                <td>Rs8.00</td>
+                <td><input type="number" name="item3_quantity" value="0" min="0"></td>
+            </tr>
+        </table>
+
+        <h2>Your Information</h2>
+        <label for="name">Name:</label>
+        <input type="text" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" required>
+
+        <h2>Payment</h2>
+        <label for="payment_method">Payment Method:</label>
+        <select name="payment_method">
+            <option value="credit_card">Credit Card</option>
+            <option value="Cashon_delivery">Cash</option>
+        </select>
+
+        <input type="submit" value="Place Order">
+    </form>
+    <nav>
+   <a href="/login.html">get started</a>
+        
+    </nav>
+    
+    <main>
+        <section id="menu">
+            <h2>Menu</h2>
+            <!-- Display your menu items here --
+        </section>
+        
+        <section id="order-form">
+            <h2>Place Your Order</h2>
+            <form id="order-form">
+                <!-- Input fields for selecting items and quantity -->
+                <button id="submit-order">Submit Order</button>
+            </form>
+        </section>
+    </main>
+    
+    <aside>
+        <!-- Display additional information or promotions here -->
+    </aside>
+    
+    <footer>
+        <p>&copy; 2023 Your Restaurant Name</p>
+    </footer>
+    
+    <script>
+        // Add JavaScript for interactivity, such as updating the order total
+        // You can a<main>
+        <section id="menu">
+            <h2>Menu</h2>
+            <ul>
+                <li>
+                    <span>Burger - Rs5.00</span>
+                    <button class="add-to-cart" data-item="Burger" data-price="5.00">Add to Cart</button>
+                </li>
+                <li>
+                    <span>Pizza - Rs10.00</span>
+                    <button class="add-to-cart" data-item="Pizza" data-price="10.00">Add to Cart</button>
+                </li>
+                <!-- Add more menu items here -->
+            </ul>
+        </section>
+        
+        <section id="order-form">
+            <h2>Your Order</h2>
+            <ul id="cart">
+                <!-- Cart items will be displayed here -->
+            </ul>
+            <p>Total: <span id="total">Rs0.00</span></p>
+            <button id="submit-order">Submit Order</button>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2023 Your Restaurant Name</p>
+    </footer>
+    
+    <script>
+        // JavaScript for handling the order form
+        const addToCartButtons = document.querySelectorAll('.add-to-cart');
+        const cartList = document.getElementById('cart');
+        const totalElement = document.getElementById('total');
+
+        let cart = [];
+
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.getAttribute('data-item');
+                const price = parseFloat(button.getAttribute('data-price'));
+                cart.push({ item, price });
+                updateCart();
+            });
+        });
+
+        function updateCart() {
+            cartList.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                total += item.price;
+                const li = document.createElement('li');
+                li.textContent = `Rs{item.item} - Rs{item.price.toFixed(2)}`;
+                cartList.appendChild(li);
+            });
+
+            totalElement.textContent = `Rs{total.toFixed(2)}`;
+        }
+
+        document.getElementById('submit-order').addEventListener('click', () => {
+            alert('Order submitted. This is a simplified example and does not process payments.');
+        });
+    </script>
+lso use JavaScript to submit the order to the server
+    </script>
+<main>
+        <section id="menu">
+            <h2>Menu</h2>
+            <ul>
+                <li>
+                    <img src="burger.jpg" alt="Burger">
+                    <h3>Burger</h3>
+                    <p>Delicious burger description here.</p>
+                    <span>Rs5.00</span>
+                    <button class="buy-button" data-price="500">Buy</button>
+                </li>
+                <li>
+                    <img src="pizza.jpg" alt="Pizza">
+                    <h3>Pizza</h3>
+                    <p>Amazing pizza description here.</p>
+                    <span>Rs10.00</span>
+                    <button class="buy-button" data-price="1000">Buy</button>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const stripe = Stripe('YOUR_PUBLIC_KEY');
+            const elements = stripe.elements();
+
+            const buyButtons = document.querySelectorAll(".buy-button");
+
+            buyButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const price = parseFloat(button.getAttribute("data-price"));
+
+                    // Create a Payment Intent on your server and get the client secret
+                    // Replace 'createPaymentIntent' with your server-side API endpoint
+                    fetch("/createPaymentIntent", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ amount: price }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            return stripe.redirectToCheckout({ sessionId: data.clientSecret });
+                        })
+                        .then(result => {
+                            if (result.error) {
+                                console.error(result.error.message);
+                            }
+                        });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
